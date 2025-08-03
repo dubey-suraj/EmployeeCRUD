@@ -2,10 +2,15 @@ package com.rest.springboot.cruddemo.rest;
 
 import com.rest.springboot.cruddemo.entity.Employee;
 import com.rest.springboot.cruddemo.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @CrossOrigin(origins = "http://localhost:4200") // Allow cross-origin requests from Angular app
@@ -41,7 +46,7 @@ public class EmployeeRestController {
 
     // add mapping for Post /employees - add new employee
     @PostMapping("/employees")
-    public Employee addEmployee(@RequestBody Employee theEmployee) {
+    public Employee addEmployee(@Valid @RequestBody Employee theEmployee) {
 
         // also just in case they pass an id in JSON ... set id to 0
         // this is to force a save of new item ... instead of update
@@ -58,17 +63,12 @@ public class EmployeeRestController {
     }
 
     @DeleteMapping("/employees/{employeeId}")
-    public String deleteEmployee(@PathVariable int employeeId) {
-
-        Employee tempEmployee = employeeService.findById(employeeId);
-
-        // throw exception if null
-        if(tempEmployee == null) {
-            throw new RuntimeException("Employee id not found - " + employeeId);
-        }
+    public Map<String, String> deleteEmployee(@PathVariable int employeeId) {
 
         employeeService.deleteById(employeeId);
-        return "Deleted employee id - " + employeeId;
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Deleted employee id - " + employeeId);
+        return response;
     }
 
 }
